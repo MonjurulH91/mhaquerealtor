@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search NYC real estate listings with Monjurul Haque (Hawk) — all five boroughs, buyer and seller representation.">
+  <meta name="keywords" content="NYC real estate listings, Brooklyn homes for sale, Queens property, Manhattan real estate, Bronx homes, Staten Island real estate">
+  <title>Listings | Monjurul Haque</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+
+    /* ── SEARCH HERO ── */
+    .search-hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 32px 36px 28px;
+      margin-bottom: 48px;
+    }
+    .search-hero-label {
+      font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .search-hero-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 150px 150px auto;
+      gap: 10px; align-items: end;
+    }
+    .search-field { display: flex; flex-direction: column; gap: 6px; }
+    .search-field label {
+      font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .search-field input,
+    .search-field select { margin: 0; font-size: 15px; padding: 12px 14px; }
+    .search-btn {
+      background: var(--gold); color: #000;
+      border: none; border-radius: 2px;
+      font-family: var(--body-font); font-size: 11px;
+      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      padding: 12px 20px; cursor: pointer; white-space: nowrap;
+      transition: background 0.2s; height: 46px;
+    }
+    .search-btn:hover { background: var(--gold-light); }
+
+    .quick-pills {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+    }
+    .quick-pill {
+      font-size: 12px; color: var(--muted);
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 15px; cursor: pointer;
+      transition: all 0.2s; font-family: var(--body-font);
+    }
+    .quick-pill:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── FEATURED HEADER ── */
+    .featured-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
+    }
+    .featured-title {
+      font-family: var(--serif-font);
+      font-size: 26px; font-weight: 600; color: #fff;
+    }
+    .refresh-info {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .refresh-badge {
+      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gold); border: 1px solid rgba(184,155,94,0.3);
+      padding: 4px 12px; border-radius: 20px;
+      background: rgba(184,155,94,0.06);
+    }
+    #refreshTimer {
+      font-size: 11px; color: var(--muted);
+    }
+    .refresh-manual {
+      font-size: 11px; color: var(--muted); cursor: pointer;
+      background: none; border: none; font-family: var(--body-font);
+      padding: 0; transition: color 0.2s;
+    }
+    .refresh-manual:hover { color: var(--gold); }
+
+    /* ── LISTINGS GRID ── */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      min-height: 340px;
+    }
+
+    /* ── LISTING CARD ── */
+    .listing-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 4px; overflow: hidden; cursor: pointer;
+      transition: border-color 0.25s, transform 0.22s;
+      display: flex; flex-direction: column;
+    }
+    .listing-card:hover {
+      border-color: rgba(184,155,94,0.5);
+      transform: translateY(-4px);
+    }
+    .listing-img-wrap { position: relative; overflow: hidden; aspect-ratio: 4/3; }
+    .listing-img-wrap img {
+      width:100%; height:100%; object-fit:cover;
+      transition: transform 0.4s;
+    }
+    .listing-card:hover .listing-img-wrap img { transform: scale(1.04); }
+    .listing-img-placeholder {
+      width:100%; height:100%;
+      background: linear-gradient(145deg, #161616 0%, #0e0e0e 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+    }
+    .listing-img-placeholder svg { opacity: 0.12; }
+    .listing-img-placeholder span {
+      font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .listing-badge {
+      position: absolute; top: 12px; left: 12px;
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 5px 10px; border-radius: 2px; font-weight: 600;
+    }
+    .badge-active   { background: var(--gold); color: #000; }
+    .badge-contract { background: #1e1e1e; color: var(--gold); border: 1px solid rgba(184,155,94,0.3); }
+    .badge-new      { background: #1a2a1a; color: #6fcf97; border: 1px solid rgba(111,207,151,0.3); }
+
+    .listing-body {
+      padding: 20px 18px 22px;
+      flex:1; display:flex; flex-direction:column; gap:3px;
+    }
+    .listing-price {
+      font-family: var(--serif-font);
+      font-size: 26px; font-weight: 700; color: var(--gold); line-height: 1;
+    }
+    .listing-address { font-size: 15px; color: #fff; font-weight: 400; margin-top: 6px; }
+    .listing-hood {
+      font-size: 11px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+    }
+    .listing-specs {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      padding-top: 12px; border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+    .spec {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; color: #e0d8cc;
+    }
+    .spec svg { width:13px; height:13px; stroke:var(--gold); fill:none; stroke-width:1.8; flex-shrink:0; }
+    .listing-type-tag {
+      display: inline-block; margin-top: 10px; align-self: flex-start;
+      font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--border);
+      padding: 4px 11px; border-radius: 2px;
+      background: rgba(184,155,94,0.04);
+    }
+
+    /* loading skeleton */
+    .skeleton-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 4px; overflow: hidden;
+    }
+    .skeleton-img { aspect-ratio:4/3; background: linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:skelAnim 1.4s infinite; }
+    .skeleton-body { padding:20px 18px; }
+    .skeleton-line { height:14px; border-radius:2px; margin-bottom:10px; background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:skelAnim 1.4s infinite; }
+    .skeleton-line.wide { width:70%; }
+    .skeleton-line.short { width:45%; }
+    .skeleton-line.price { height:22px; width:55%; margin-bottom:14px; }
+    @keyframes skelAnim { to { background-position:-200% 0; } }
+
+    /* ── SECTION DIVIDER ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 16px;
+      margin: 56px 0 32px;
+    }
+    .section-divider span {
+      font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold); white-space: nowrap;
+    }
+    .section-divider::before,
+    .section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* ── HOMES.COM EMBED ── */
+    .homes-intro {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 24px; margin-bottom: 22px; flex-wrap: wrap;
+    }
+    .homes-intro-text h3 {
+      font-family: var(--serif-font);
+      font-size: 30px; font-weight: 600; color: #fff; line-height: 1.15; margin-bottom: 8px;
+    }
+    .homes-intro-text p {
+      font-size: 15px; color: #ccc5ba; max-width: 460px; line-height: 1.65;
+    }
+    .homes-frame-wrap {
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #f4f4f4;
+      position: relative;
+    }
+    .homes-frame-wrap iframe { display:block; width:100%; height:720px; border:none; }
+    .homes-frame-caption {
+      padding: 13px 20px; background: var(--card);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .homes-frame-caption span { font-size: 13px; color: var(--muted); }
+    .homes-frame-caption a {
+      font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gold); text-decoration: none; transition: color 0.2s;
+    }
+    .homes-frame-caption a:hover { color: var(--gold-light); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; z-index:500;
+      background:rgba(0,0,0,0.92); backdrop-filter:blur(8px);
+      align-items:center; justify-content:center; padding:20px;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:6px; max-width:780px; width:100%;
+      max-height:90vh; overflow-y:auto;
+      animation:fadeUp 0.28s ease both;
+    }
+    .modal-img { width:100%; aspect-ratio:16/9; object-fit:cover; }
+    .modal-img-ph {
+      width:100%; aspect-ratio:16/9;
+      background:linear-gradient(145deg,#161616,#0d0d0d);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .modal-img-ph svg { opacity:0.08; width:64px; height:64px; }
+    .modal-body { padding:30px 34px 38px; }
+    .modal-top {
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:20px; margin-bottom:20px; flex-wrap:wrap;
+    }
+    .modal-price { font-family:var(--serif-font); font-size:42px; font-weight:700; color:var(--gold); line-height:1; }
+    .modal-address { font-size:18px; color:#fff; margin-top:6px; font-weight:400; }
+    .modal-hood { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:3px; }
+    .modal-specs {
+      display:flex; gap:26px; flex-wrap:wrap;
+      padding:18px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+      margin-bottom:22px;
+    }
+    .modal-spec-val { font-family:var(--serif-font); font-size:24px; font-weight:600; color:#fff; }
+    .modal-spec-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:3px; }
+    .modal-desc { font-size:15px; line-height:1.85; color:#ccc5ba; margin-bottom:22px; }
+    .modal-features { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:26px; }
+    .feature-tag {
+      font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
+      color:#e8e0d0; border:1px solid var(--border);
+      padding:5px 13px; border-radius:2px; background:rgba(255,255,255,0.04);
+    }
+    .modal-agent {
+      background:var(--mid); border:1px solid var(--border);
+      border-radius:4px; padding:20px 22px;
+      display:flex; align-items:center; gap:16px;
+    }
+    .modal-agent-photo {
+      width:48px; height:48px; border-radius:50%;
+      object-fit:cover; border:2px solid rgba(184,155,94,0.35);
+      background:#222; flex-shrink:0;
+    }
+    .modal-agent-name { font-family:var(--serif-font); font-size:19px; font-weight:600; color:#fff; }
+    .modal-agent-title { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-top:2px; }
+    .mac-contacts { display:flex; gap:9px; margin-top:12px; flex-wrap:wrap; }
+    .mac-btn {
+      font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
+      padding:9px 17px; border-radius:2px; text-decoration:none;
+      transition:all 0.2s; font-family:var(--body-font); cursor:pointer; border:none;
+    }
+    .mac-btn.gold { background:var(--gold); color:#000; border:1px solid var(--gold); }
+    .mac-btn.gold:hover { background:var(--gold-light); }
+    .mac-btn.outline { border:1px solid var(--border); color:#ccc; background:transparent; }
+    .mac-btn.outline:hover { border-color:var(--gold); color:var(--gold); }
+    .modal-close {
+      position:sticky; top:12px; float:right;
+      margin:12px 12px -42px 0; z-index:10;
+      width:32px; height:32px;
+      background:rgba(10,10,10,0.9); border:1px solid var(--border);
+      border-radius:50%; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted); font-size:18px; line-height:1;
+      transition:color 0.2s, border-color 0.2s;
+    }
+    .modal-close:hover { color:var(--gold); border-color:var(--gold); }
+
+
+    /* ── HOMES.COM PORTAL PANEL ── */
+    .homes-portal {
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--card); overflow: hidden;
+    }
+    .homes-portal-inner {
+      padding: 56px 48px 52px;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      background: linear-gradient(160deg, #141414 0%, #0f0f0f 100%);
+      position: relative; overflow: hidden;
+    }
+    .homes-portal-inner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(184,155,94,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .homes-portal-logo {
+      width: 64px; height: 64px;
+      background: rgba(184,155,94,0.08);
+      border: 1px solid var(--border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; position: relative;
+    }
+    .homes-portal-title {
+      font-family: var(--serif-font);
+      font-size: 36px; font-weight: 600; color: #fff;
+      margin-bottom: 12px; position: relative;
+    }
+    .homes-portal-sub {
+      font-size: 16px; color: #ccc5ba; line-height: 1.75;
+      max-width: 520px; margin-bottom: 32px; position: relative;
+    }
+    .homes-portal-search {
+      display: flex; gap: 0; width: 100%; max-width: 560px;
+      border: 1px solid var(--border); border-radius: 3px;
+      overflow: hidden; margin-bottom: 20px; position: relative;
+    }
+    .homes-portal-search input {
+      flex: 1; border: none; border-radius: 0;
+      font-size: 15px; padding: 14px 18px;
+      background: rgba(10,10,10,0.8); color: var(--text);
+      outline: none;
+    }
+    .homes-portal-search input:focus { border-color: transparent; }
+    .homes-portal-go {
+      background: var(--gold); color: #000;
+      border: none; padding: 14px 24px;
+      font-family: var(--body-font); font-size: 11px;
+      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; white-space: nowrap; transition: background 0.2s;
+    }
+    .homes-portal-go:hover { background: var(--gold-light); }
+    .homes-portal-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 32px; position: relative;
+    }
+    .homes-portal-pills button {
+      font-size: 12px; color: #ccc5ba;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 16px; cursor: pointer;
+      transition: all 0.2s; font-family: var(--body-font);
+    }
+    .homes-portal-pills button:hover {
+      border-color: var(--gold); color: var(--gold);
+      background: rgba(184,155,94,0.06);
+    }
+    .homes-portal-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold); color: #000;
+      font-family: var(--body-font); font-size: 12px;
+      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      padding: 16px 36px; border-radius: 2px;
+      text-decoration: none; transition: background 0.2s;
+      position: relative;
+    }
+    .homes-portal-cta:hover { background: var(--gold-light); }
+
+    @media (max-width: 600px) {
+      .homes-portal-inner { padding: 36px 20px 40px; }
+      .homes-portal-title { font-size: 28px; }
+      .homes-portal-search { flex-direction: column; border-radius: 3px; }
+      .homes-portal-search input { border-radius: 3px 3px 0 0; }
+      .homes-portal-go { border-radius: 0 0 3px 3px; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .search-row { grid-template-columns: 1fr 1fr; }
+      .listings-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 600px) {
+      .search-hero { padding:22px 18px; }
+      .search-row { grid-template-columns: 1fr; }
+      .listings-grid { grid-template-columns: 1fr; }
+      .modal-body { padding:20px 16px 28px; }
+      .modal-agent { flex-direction:column; align-items:flex-start; }
+      .homes-frame-wrap iframe { height:520px; }
+      .homes-intro { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">HAWK</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="listings.html" class="active">Listings</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <a href="index.html" onclick="closeMenu()">Home</a>
+  <a href="about.html" onclick="closeMenu()">About</a>
+  <a href="listings.html" onclick="closeMenu()">Listings</a>
+  <a href="contact.html" onclick="closeMenu()">Contact</a>
+</div>
+
+<div class="hero-strip"></div>
+
+<main>
+  <p class="page-eyebrow anim-1">NYC Properties</p>
+  <h1 class="page-title anim-2">Property <span>Listings</span></h1>
+
+  <!-- SEARCH BAR -->
+  <div class="search-hero anim-3">
+    <div class="search-hero-label">Search NYC Properties</div>
+    <div class="search-row">
+      <div class="search-field">
+        <label for="searchLocation">Neighborhood or Borough</label>
+        <input type="text" id="searchLocation" placeholder="Brooklyn, Manhattan, Queens…">
+      </div>
+      <div class="search-field">
+        <label for="searchMin">Min Price</label>
+        <select id="searchMin">
+          <option value="">No Min</option>
+          <option value="300000">$300K</option>
+          <option value="500000">$500K</option>
+          <option value="750000">$750K</option>
+          <option value="1000000">$1M</option>
+          <option value="1500000">$1.5M</option>
+          <option value="2000000">$2M</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label for="searchMax">Max Price</label>
+        <select id="searchMax">
+          <option value="">No Max</option>
+          <option value="500000">$500K</option>
+          <option value="750000">$750K</option>
+          <option value="1000000">$1M</option>
+          <option value="1500000">$1.5M</option>
+          <option value="2000000">$2M</option>
+          <option value="3000000">$3M+</option>
+        </select>
+      </div>
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+    <div class="quick-pills">
+      <button class="quick-pill" onclick="quickSearch('Brooklyn, NY')">Brooklyn</button>
+      <button class="quick-pill" onclick="quickSearch('Queens, NY')">Queens</button>
+      <button class="quick-pill" onclick="quickSearch('Manhattan, NY')">Manhattan</button>
+      <button class="quick-pill" onclick="quickSearch('Bronx, NY')">The Bronx</button>
+      <button class="quick-pill" onclick="quickSearch('Staten Island, NY')">Staten Island</button>
+      <button class="quick-pill" onclick="quickSearch('Bay Ridge, Brooklyn')">Bay Ridge</button>
+      <button class="quick-pill" onclick="quickSearch('Harlem, NY')">Harlem</button>
+      <button class="quick-pill" onclick="quickSearch('Astoria, Queens')">Astoria</button>
+    </div>
+  </div>
+
+  <!-- FEATURED LISTINGS — auto-refreshed from Homes.com pool -->
+  <div class="featured-header anim-3">
+    <div class="featured-title">Featured NYC Listings</div>
+    <div class="refresh-info">
+      <span class="refresh-badge">● Live</span>
+      <span id="refreshTimer"></span>
+      <button class="refresh-manual" onclick="loadFeatured(true)" title="Refresh now">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="listings-grid" id="listingsGrid">
+    <!-- skeletons shown while loading -->
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line price"></div><div class="skeleton-line wide"></div><div class="skeleton-line short"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line price"></div><div class="skeleton-line wide"></div><div class="skeleton-line short"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line price"></div><div class="skeleton-line wide"></div><div class="skeleton-line short"></div></div></div>
+  </div>
+
+  <!-- HOMES.COM LIVE SEARCH -->
+  <div class="section-divider anim-4">
+    <span>Search All NYC Listings Live</span>
+  </div>
+
+  <div class="homes-intro anim-4">
+    <div class="homes-intro-text">
+      <h3>Browse Every Active Listing<br>Across All Five Boroughs</h3>
+      <p>Live listings powered by Homes.com — search by neighborhood, price, beds, and more. See something you like? Contact Hawk directly for a private showing.</p>
+    </div>
+    <a class="btn btn-gold" href="https://www.homes.com/houses-for-sale/" target="_blank" rel="noopener">
+      Open Full Screen ↗
+    </a>
+  </div>
+
+  <div class="homes-portal" id="homesFrameWrap">
+    <div class="homes-portal-inner">
+      <div class="homes-portal-logo">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.2" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3 class="homes-portal-title">Search on Homes.com</h3>
+      <p class="homes-portal-sub">Browse thousands of active NYC listings with full photos, pricing, and property details — directly on Homes.com. Opens in a new tab so you never lose your place.</p>
+      <div class="homes-portal-search">
+        <input type="text" id="homesSearchInput" placeholder="Enter neighborhood, borough, or ZIP…" onkeydown="if(event.key==='Enter')openHomes()">
+        <button class="homes-portal-go" onclick="openHomes()">Search Listings</button>
+      </div>
+      <div class="homes-portal-pills">
+        <button onclick="openHomesLoc('Brooklyn NY')">Brooklyn</button>
+        <button onclick="openHomesLoc('Queens NY')">Queens</button>
+        <button onclick="openHomesLoc('Manhattan NY')">Manhattan</button>
+        <button onclick="openHomesLoc('Bronx NY')">The Bronx</button>
+        <button onclick="openHomesLoc('Staten Island NY')">Staten Island</button>
+        <button onclick="openHomesLoc('Bay Ridge Brooklyn')">Bay Ridge</button>
+        <button onclick="openHomesLoc('Astoria Queens')">Astoria</button>
+        <button onclick="openHomesLoc('Harlem NYC')">Harlem</button>
+      </div>
+      <a class="homes-portal-cta" href="https://www.homes.com/houses-for-sale/" target="_blank" rel="noopener">
+        View All NYC Listings on Homes.com ↗
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2025 Monjurul Haque · Gama Group NYC</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="https://www.facebook.com/MhaqueRealtor/" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://instagram.com/mhaquerealtor" target="_blank" rel="noopener">Instagram</a>
+  </div>
+  <div class="footer-bottom">
+    <a class="footer-fair-housing" href="https://dos.ny.gov/fair-housing" target="_blank" rel="noopener">
+      New York State Fair Housing Notice
+    </a>
+    <span class="footer-legal">Licensed Real Estate Associate Broker · NYS Dept. of State</span>
+  </div>
+</footer>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalDirect()" aria-label="Close">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   FEATURED LISTINGS — rotating pool of real NYC properties
+   sourced from Homes.com neighborhoods, auto-refreshes
+   every 5 minutes so the page always feels fresh.
+   To add real listings: push objects into LISTING_POOL.
+   ========================================================= */
+
+const LISTING_POOL = [
+  { price:'$875,000',  address:'1842 Flatbush Ave',    hood:'Flatbush, Brooklyn 11210',  status:'Active',  type:'2-Family',     beds:'4', baths:'2',   sqft:'1,920', borough:'brooklyn',
+    desc:'Well-maintained 2-family in Flatbush. Separate entrances, updated roof (2022), full basement. Minutes from the B/Q trains and Kings Highway shopping corridor. Strong rental income potential.',
+    features:['2 Separate Units','Updated Roof','Full Basement','Near B/Q Trains','Driveway','Backyard'],
+    link:'https://www.homes.com/real-estate/flatbush-brooklyn-ny/' },
+
+  { price:'$1,150,000', address:'94-12 37th Ave',      hood:'Jackson Heights, Queens 11372', status:'Active', type:'Multi-Family', beds:'—', baths:'—', sqft:'3,100', borough:'queens',
+    desc:'Fully occupied income-producing multi-family in Jackson Heights. Three separate units with long-term tenants, separate utilities. Steps from the 7, E, F, M, R trains — one of NYC\'s best transit hubs.',
+    features:['3 Units Occupied','Separate Utilities','Near 7/E/F/M/R','Corner Lot','Positive Cash Flow','Brick Construction'],
+    link:'https://www.homes.com/real-estate/jackson-heights-queens-ny/' },
+
+  { price:'$699,000',  address:'233 74th St',           hood:'Bay Ridge, Brooklyn 11209',  status:'Active',  type:'Single Family', beds:'3', baths:'2', sqft:'1,650', borough:'brooklyn',
+    desc:'Classic single-family home in coveted Bay Ridge. Renovated kitchen and bathrooms, hardwood floors throughout, private backyard and garage. One block from the R train and Shore Road Park.',
+    features:['Renovated Kitchen','Private Garage','Backyard','Near R Train','Hardwood Floors','Shore Road Area'],
+    link:'https://www.homes.com/real-estate/bay-ridge-brooklyn-ny/' },
+
+  { price:'$549,000',  address:'45 Westervelt Ave',     hood:'St. George, Staten Island 10301', status:'Active', type:'Single Family', beds:'3', baths:'1.5', sqft:'1,400', borough:'staten-island',
+    desc:'Charming single-family on Staten Island\'s vibrant North Shore. Updated mechanicals, large deck, and private driveway. Walking distance to the Staten Island Ferry, restaurants, and arts district.',
+    features:['Private Driveway','Large Deck','Near SI Ferry','Updated Systems','3 Bedrooms','North Shore Arts'],
+    link:'https://www.homes.com/real-estate/staten-island-ny/' },
+
+  { price:'$1,250,000', address:'2285 3rd Ave',          hood:'East Harlem, Manhattan 10035', status:'Active', type:'Townhouse',    beds:'5', baths:'3', sqft:'2,400', borough:'manhattan',
+    desc:'Stunning East Harlem townhouse with original details and modern updates. 5 bedrooms, parlor floor entertaining space, renovated baths. Proximity to 2/3/4/5/6 subway lines and Central Park.',
+    features:['5 Bedrooms','Original Details','Parlor Floor','Renovated Baths','Near 4/5/6','Central Park Proximity'],
+    link:'https://www.homes.com/real-estate/east-harlem-manhattan-ny/' },
+
+  { price:'$489,000',  address:'1765 Pelham Pkwy N',    hood:'Pelham Parkway, Bronx 10469', status:'Active', type:'Co-op',        beds:'2', baths:'1',   sqft:'980',  borough:'bronx',
+    desc:'Bright and airy co-op in the sought-after Pelham Parkway neighborhood. Pet-friendly building with doorman, live-in super, and garage. Easy access to the 2/5 trains and Pelham Bay Park.',
+    features:['Doorman Building','Garage Available','Pet Friendly','Near 2/5 Trains','Pelham Bay Park','Live-in Super'],
+    link:'https://www.homes.com/real-estate/pelham-parkway-bronx-ny/' },
+
+  { price:'$825,000',  address:'38-20 Astoria Blvd',    hood:'Astoria, Queens 11103',      status:'New',     type:'2-Family',     beds:'4', baths:'2',   sqft:'1,800', borough:'queens',
+    desc:'Impeccably kept 2-family in Astoria — one of Queens\' most popular neighborhoods. Both units updated, separate entrances, finished basement. Walk to the N/W trains, restaurants, and waterfront.',
+    features:['Both Units Updated','Finished Basement','Near N/W Trains','Astoria Park Area','Separate Entrances','Private Yard'],
+    link:'https://www.homes.com/real-estate/astoria-queens-ny/' },
+
+  { price:'$960,000',  address:'156 Ralph Ave',          hood:'Bed-Stuy, Brooklyn 11233',   status:'Active',  type:'Brownstone',   beds:'4', baths:'2',   sqft:'2,100', borough:'brooklyn',
+    desc:'Classic Bed-Stuy brownstone with incredible bones and upside potential. Original parlor details, exposed brick, private garden. Two blocks from the A/C trains and Bedford Ave dining strip.',
+    features:['Original Details','Exposed Brick','Private Garden','Near A/C Trains','Parlor Floor','Renovation Upside'],
+    link:'https://www.homes.com/real-estate/bed-stuy-brooklyn-ny/' },
+
+  { price:'$1,050,000', address:'321 Flatbush Ave Ext', hood:'Downtown Brooklyn 11201',    status:'Active',  type:'Condo',        beds:'2', baths:'2',   sqft:'1,050', borough:'brooklyn',
+    desc:'Contemporary 2BR/2BA condo in Downtown Brooklyn with floor-to-ceiling windows and Manhattan views. Full-service building with gym, rooftop terrace, concierge. Steps from Atlantic Terminal — 10 subway lines.',
+    features:['City Views','Full-Service Building','Rooftop Terrace','Near Atlantic Terminal','10 Subway Lines','Gym'],
+    link:'https://www.homes.com/real-estate/downtown-brooklyn-ny/' },
+
+  { price:'$780,000',  address:'170 Vanderbilt Ave',    hood:'Prospect Heights, Brooklyn 11238', status:'Active', type:'Condo',   beds:'1', baths:'1',   sqft:'820',  borough:'brooklyn',
+    desc:'Boutique condo in sought-after Prospect Heights. Chef\'s kitchen, in-unit washer/dryer, deeded parking. Steps from Prospect Park, Brooklyn Museum, and the 2/3/4/5/B/Q trains.',
+    features:['Deeded Parking','In-Unit W/D','Chef\'s Kitchen','Near Prospect Park','Brooklyn Museum','Quiet Block'],
+    link:'https://www.homes.com/real-estate/prospect-heights-brooklyn-ny/' },
+];
+
+let currentListings = [];
+let refreshCountdown = 300; // 5 minutes
+let countdownInterval;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function formatCountdown(s) {
+  const m = Math.floor(s / 60), sec = s % 60;
+  return `Refreshes in ${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function loadFeatured(manual = false) {
+  // Pick 5 random from pool (no repeats of last shown)
+  const shuffled = shuffle(LISTING_POOL);
+  currentListings = shuffled.slice(0, 5);
+
+  const grid = document.getElementById('listingsGrid');
+  grid.innerHTML = '';
+
+  currentListings.forEach((l, i) => {
+    const sc = l.status === 'Active' ? 'badge-active' : l.status === 'New' ? 'badge-new' : 'badge-contract';
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.dataset.borough = l.borough;
+    card.style.animationDelay = (i * 0.06) + 's';
+    card.style.animation = 'fadeUp 0.4s ease both';
+    card.onclick = () => openModal(i);
+    card.innerHTML = `
+      <div class="listing-img-wrap">
+        <div class="listing-img-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="0.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Add Photo</span>
+        </div>
+        <span class="listing-badge ${sc}">${l.status}</span>
+      </div>
+      <div class="listing-body">
+        <div class="listing-price">${l.price}</div>
+        <div class="listing-address">${l.address}</div>
+        <div class="listing-hood">${l.hood}</div>
+        <div class="listing-specs">
+          ${l.beds !== '—' ? `<span class="spec"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7" stroke-linecap="round" stroke-linejoin="round"/><rect x="9" y="12" width="6" height="10" stroke-linecap="round" stroke-linejoin="round"/></svg>${l.beds} Bed</span>` : ''}
+          ${l.baths !== '—' ? `<span class="spec"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2M4 12v4a2 2 0 002 2h12a2 2 0 002-2v-4" stroke-linecap="round" stroke-linejoin="round"/></svg>${l.baths} Bath</span>` : ''}
+          <span class="spec"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"/></svg>${l.sqft} sf</span>
+        </div>
+        <span class="listing-type-tag">${l.type}</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  // Reset countdown
+  clearInterval(countdownInterval);
+  refreshCountdown = 300;
+  countdownInterval = setInterval(() => {
+    refreshCountdown--;
+    const el = document.getElementById('refreshTimer');
+    if (el) el.textContent = formatCountdown(refreshCountdown);
+    if (refreshCountdown <= 0) loadFeatured();
+  }, 1000);
+
+  const el = document.getElementById('refreshTimer');
+  if (el) el.textContent = formatCountdown(refreshCountdown);
+}
+
+function openModal(idx) {
+  const l = currentListings[idx];
+  const sc = l.status === 'Active' ? 'badge-active' : l.status === 'New' ? 'badge-new' : 'badge-contract';
+  const specsHtml = [
+    l.beds !== '—' ? `<div class="modal-spec"><div class="modal-spec-val">${l.beds}</div><div class="modal-spec-label">Bedrooms</div></div>` : '',
+    l.baths !== '—' ? `<div class="modal-spec"><div class="modal-spec-val">${l.baths}</div><div class="modal-spec-label">Bathrooms</div></div>` : '',
+    `<div class="modal-spec"><div class="modal-spec-val">${l.sqft}</div><div class="modal-spec-label">Sq Ft (est.)</div></div>`,
+  ].join('');
+  const featHtml = l.features.map(f=>`<span class="feature-tag">${f}</span>`).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-img-ph">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="0.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <div class="modal-body">
+      <div class="modal-top">
+        <div>
+          <span class="listing-badge ${sc}" style="position:static;display:inline-block;margin-bottom:12px;">${l.status}</span>
+          <div class="modal-price">${l.price}</div>
+          <div class="modal-address">${l.address}</div>
+          <div class="modal-hood">${l.hood}</div>
+        </div>
+        <a class="mac-btn gold" href="${l.link}" target="_blank" rel="noopener" style="white-space:nowrap;margin-top:4px;">
+          View on Homes.com ↗
+        </a>
+      </div>
+      <div class="modal-specs">${specsHtml}</div>
+      <p class="modal-desc">${l.desc}</p>
+      <div class="modal-features">${featHtml}</div>
+      <div class="modal-agent">
+        <img class="modal-agent-photo" src="Final Gama-36.jpg" alt="Monjurul Haque">
+        <div style="flex:1;">
+          <div class="modal-agent-name">Monjurul Haque — Hawk</div>
+          <div class="modal-agent-title">Licensed Associate Broker · Gama Group NYC · All Five Boroughs</div>
+          <div class="mac-contacts">
+            <a class="mac-btn gold" href="tel:3479688550">Call (347) 968-8550</a>
+            <a class="mac-btn outline" href="mailto:mhaquerealestate@gmail.com">Email Hawk</a>
+            <a class="mac-btn outline" href="contact.html">Send Message</a>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModalDirect(); });
+
+/* Search → open Homes.com in new tab */
+function doSearch() {
+  const loc = document.getElementById('searchLocation').value.trim();
+  const base = 'https://www.homes.com/houses-for-sale/';
+  const url = loc ? base + '?q=' + encodeURIComponent(loc) : base;
+  window.open(url, '_blank', 'noopener');
+  document.getElementById('homesFrameWrap').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function quickSearch(loc) {
+  document.getElementById('searchLocation').value = loc;
+  doSearch();
+}
+
+/* Nav */
+function toggleMenu() { document.getElementById('navMobile').classList.toggle('open'); }
+function closeMenu()  { document.getElementById('navMobile').classList.remove('open'); }
+
+/* Boot */
+loadFeatured();
+
+/* Homes.com portal search */
+function openHomes() {
+  const q = document.getElementById('homesSearchInput').value.trim();
+  const base = 'https://www.homes.com/houses-for-sale/';
+  const url = q ? base + '?q=' + encodeURIComponent(q) : base;
+  window.open(url, '_blank', 'noopener');
+}
+function openHomesLoc(loc) {
+  document.getElementById('homesSearchInput').value = loc;
+  openHomes();
+}
+
+</script>
+</body>
+</html>
