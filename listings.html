@@ -61,54 +61,6 @@
    href="style.css">
   <style>
 
-    /* ── SEARCH HERO ── */
-    .search-hero {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 32px 36px 28px;
-      margin-bottom: 48px;
-    }
-    .search-hero-label {
-      font-size: 11px; letter-spacing: 3px;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 18px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .search-hero-label::after { content:''; flex:1; height:1px; background:var(--border); }
-
-    .search-row {
-      display: grid;
-      grid-template-columns: 1fr 150px 150px auto;
-      gap: 10px; align-items: end;
-    }
-    .search-field { display: flex; flex-direction: column; gap: 6px; }
-    .search-field label {
-      font-size: 10px; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .search-field input,
-    .search-field select { margin: 0; font-size: 15px; padding: 12px 14px; }
-    .search-btn {
-      background: var(--gold); color: #000;
-      border: none; border-radius: 2px;
-      font-family: var(--body-font); font-size: 11px;
-      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
-      padding: 12px 20px; cursor: pointer; white-space: nowrap;
-      transition: background 0.2s; height: 46px;
-    }
-    .search-btn:hover { background: var(--gold-light); }
-
-    .quick-pills {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
-    }
-    .quick-pill {
-      font-size: 12px; color: var(--muted);
-      background: transparent; border: 1px solid var(--border);
-      border-radius: 20px; padding: 5px 15px; cursor: pointer;
-      transition: all 0.2s; font-family: var(--body-font);
-    }
-    .quick-pill:hover { border-color: var(--gold); color: var(--gold); }
 
     /* ── FEATURED HEADER ── */
     .featured-header {
@@ -432,14 +384,71 @@
       .homes-portal-go { border-radius: 0 0 3px 3px; }
     }
 
+    /* ── BOROUGH GRID ── */
+    .borough-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%; max-width: 680px;
+      margin-bottom: 32px; position: relative;
+    }
+    .borough-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 4px; padding: 20px 18px;
+      cursor: pointer; text-align: left;
+      transition: border-color 0.2s, background 0.2s, transform 0.18s;
+      font-family: var(--body-font);
+      display: flex; flex-direction: column; gap: 4px;
+      position: relative; overflow: hidden;
+    }
+    .borough-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(184,155,94,0.07) 0%, transparent 100%);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .borough-btn:hover {
+      border-color: var(--gold);
+      background: rgba(184,155,94,0.05);
+      transform: translateY(-2px);
+    }
+    .borough-btn:hover::after { opacity: 1; }
+    .borough-btn-name {
+      font-family: var(--serif-font);
+      font-size: 20px; font-weight: 600; color: #fff;
+      line-height: 1.1;
+    }
+    .borough-btn-sub {
+      font-size: 11px; color: var(--muted);
+      line-height: 1.4; letter-spacing: 0.3px;
+    }
+    .borough-btn-arrow {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold); font-size: 16px; opacity: 0;
+      transition: opacity 0.2s, right 0.2s;
+    }
+    .borough-btn:hover .borough-btn-arrow { opacity: 1; right: 12px; }
+
+    /* last 2 buttons span to center on 3-col grid */
+    .borough-btn:nth-child(4) { grid-column: 1 / 2; }
+    .borough-btn:nth-child(5) { grid-column: 2 / 3; }
+
+    @media (max-width: 680px) {
+      .borough-grid { grid-template-columns: 1fr 1fr; }
+      .borough-btn:nth-child(4),
+      .borough-btn:nth-child(5) { grid-column: auto; }
+    }
+    @media (max-width: 420px) {
+      .borough-grid { grid-template-columns: 1fr; }
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
-      .search-row { grid-template-columns: 1fr 1fr; }
       .listings-grid { grid-template-columns: repeat(2,1fr); }
     }
     @media (max-width: 600px) {
-      .search-hero { padding:22px 18px; }
-      .search-row { grid-template-columns: 1fr; }
       .listings-grid { grid-template-columns: 1fr; }
       .modal-body { padding:20px 16px 28px; }
       .modal-agent { flex-direction:column; align-items:flex-start; }
@@ -477,50 +486,6 @@
   <h1 class="page-title anim-2">Property <span>Listings</span></h1>
 
   <!-- SEARCH BAR -->
-  <div class="search-hero anim-3">
-    <div class="search-hero-label">Search NYC Properties</div>
-    <div class="search-row">
-      <div class="search-field">
-        <label for="searchLocation">Neighborhood or Borough</label>
-        <input type="text" id="searchLocation" placeholder="Brooklyn, Manhattan, Queens…">
-      </div>
-      <div class="search-field">
-        <label for="searchMin">Min Price</label>
-        <select id="searchMin">
-          <option value="">No Min</option>
-          <option value="300000">$300K</option>
-          <option value="500000">$500K</option>
-          <option value="750000">$750K</option>
-          <option value="1000000">$1M</option>
-          <option value="1500000">$1.5M</option>
-          <option value="2000000">$2M</option>
-        </select>
-      </div>
-      <div class="search-field">
-        <label for="searchMax">Max Price</label>
-        <select id="searchMax">
-          <option value="">No Max</option>
-          <option value="500000">$500K</option>
-          <option value="750000">$750K</option>
-          <option value="1000000">$1M</option>
-          <option value="1500000">$1.5M</option>
-          <option value="2000000">$2M</option>
-          <option value="3000000">$3M+</option>
-        </select>
-      </div>
-      <button class="search-btn" onclick="doSearch()">Search</button>
-    </div>
-    <div class="quick-pills">
-      <button class="quick-pill" onclick="quickSearch('Brooklyn, NY')">Brooklyn</button>
-      <button class="quick-pill" onclick="quickSearch('Queens, NY')">Queens</button>
-      <button class="quick-pill" onclick="quickSearch('Manhattan, NY')">Manhattan</button>
-      <button class="quick-pill" onclick="quickSearch('Bronx, NY')">The Bronx</button>
-      <button class="quick-pill" onclick="quickSearch('Staten Island, NY')">Staten Island</button>
-      <button class="quick-pill" onclick="quickSearch('Bay Ridge, Brooklyn')">Bay Ridge</button>
-      <button class="quick-pill" onclick="quickSearch('Harlem, NY')">Harlem</button>
-      <button class="quick-pill" onclick="quickSearch('Astoria, Queens')">Astoria</button>
-    </div>
-  </div>
 
   <!-- FEATURED LISTINGS — auto-refreshed from Homes.com pool -->
   <div class="featured-header anim-3">
@@ -541,43 +506,62 @@
 
   <!-- HOMES.COM LIVE SEARCH -->
   <div class="section-divider anim-4">
-    <span>Search All NYC Listings Live</span>
+    <span>Search Live NYC Listings</span>
   </div>
 
   <div class="homes-intro anim-4">
     <div class="homes-intro-text">
-      <h3>Browse Every Active Listing<br>Across All Five Boroughs</h3>
-      <p>Live listings powered by Homes.com — search by neighborhood, price, beds, and more. See something you like? Contact Hawk directly for a private showing.</p>
+      <h3>Search Active NYC Listings<br>by Borough</h3>
+      <p>Select a borough below to browse all active listings on Homes.com — live pricing, photos, and full property details. Contact Hawk directly for a private showing on anything you find.</p>
     </div>
     <a class="btn btn-gold" href="https://www.homes.com/houses-for-sale/" target="_blank" rel="noopener">
-      Open Full Screen ↗
+      All NYC on Homes.com ↗
     </a>
   </div>
 
   <div class="homes-portal" id="homesFrameWrap">
     <div class="homes-portal-inner">
+
       <div class="homes-portal-logo">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.2" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h3 class="homes-portal-title">Search on Homes.com</h3>
-      <p class="homes-portal-sub">Browse thousands of active NYC listings with full photos, pricing, and property details — directly on Homes.com. Opens in a new tab so you never lose your place.</p>
-      <div class="homes-portal-search">
-        <input type="text" id="homesSearchInput" placeholder="Enter neighborhood, borough, or ZIP…" onkeydown="if(event.key==='Enter')openHomes()">
-        <button class="homes-portal-go" onclick="openHomes()">Search Listings</button>
+
+      <h3 class="homes-portal-title">Choose a Borough to Search</h3>
+      <p class="homes-portal-sub">Select any borough below to instantly open live, active listings on Homes.com — no location tracking, no guessing. Every result is specific to that area.</p>
+
+      <!-- Borough grid buttons -->
+      <div class="borough-grid">
+        <button class="borough-btn" onclick="openBorough('brooklyn')">
+          <span class="borough-btn-name">Brooklyn</span>
+          <span class="borough-btn-sub">Bay Ridge · Flatbush · Bed-Stuy · Williamsburg</span>
+          <span class="borough-btn-arrow">→</span>
+        </button>
+        <button class="borough-btn" onclick="openBorough('queens')">
+          <span class="borough-btn-name">Queens</span>
+          <span class="borough-btn-sub">Astoria · Jackson Heights · Flushing · Jamaica</span>
+          <span class="borough-btn-arrow">→</span>
+        </button>
+        <button class="borough-btn" onclick="openBorough('manhattan')">
+          <span class="borough-btn-name">Manhattan</span>
+          <span class="borough-btn-sub">Harlem · Washington Heights · Upper West Side</span>
+          <span class="borough-btn-arrow">→</span>
+        </button>
+        <button class="borough-btn" onclick="openBorough('bronx')">
+          <span class="borough-btn-name">The Bronx</span>
+          <span class="borough-btn-sub">Riverdale · Pelham Parkway · Wakefield</span>
+          <span class="borough-btn-arrow">→</span>
+        </button>
+        <button class="borough-btn" onclick="openBorough('staten-island')">
+          <span class="borough-btn-name">Staten Island</span>
+          <span class="borough-btn-sub">St. George · New Dorp · Great Kills · Tottenville</span>
+          <span class="borough-btn-arrow">→</span>
+        </button>
       </div>
-      <div class="homes-portal-pills">
-        <button onclick="openHomesLoc('Brooklyn NY')">Brooklyn</button>
-        <button onclick="openHomesLoc('Queens NY')">Queens</button>
-        <button onclick="openHomesLoc('Manhattan NY')">Manhattan</button>
-        <button onclick="openHomesLoc('Bronx NY')">The Bronx</button>
-        <button onclick="openHomesLoc('Staten Island NY')">Staten Island</button>
-        <button onclick="openHomesLoc('Bay Ridge Brooklyn')">Bay Ridge</button>
-        <button onclick="openHomesLoc('Astoria Queens')">Astoria</button>
-        <button onclick="openHomesLoc('Harlem NYC')">Harlem</button>
-      </div>
+
       <a class="homes-portal-cta" href="https://www.homes.com/houses-for-sale/" target="_blank" rel="noopener">
-        View All NYC Listings on Homes.com ↗
+        Browse All NYC Listings on Homes.com ↗
       </a>
+
     </div>
   </div>
 
@@ -585,7 +569,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-copy">© 2025 Monjurul Haque</div>
+  <div class="footer-copy">© 2025 Monjurul Haque · Gama Group NYC</div>
   <div class="footer-links">
     <a href="index.html">Home</a>
     <a href="about.html">About</a>
@@ -598,7 +582,7 @@
     <a class="footer-fair-housing" href="https://dos.ny.gov/fair-housing" target="_blank" rel="noopener">
       New York State Fair Housing Notice
     </a>
-    <span class="footer-legal">Licensed Real Estate Associate Broker · Gama Group NYC</span>
+    <span class="footer-legal">Licensed Real Estate Associate Broker · NYS Dept. of State</span>
   </div>
 </footer>
 
@@ -612,37 +596,41 @@
 
 <script>
 /* ================================================================
-   YOUR REAL LISTINGS — add your actual active listings here.
-   Each object you add will appear in the rotating featured grid.
+   HAWK'S ACTIVE LISTINGS
+   ─────────────────────────────────────────────────────────────────
+   HOW TO ADD / UPDATE A LISTING:
+   1. Find the listing you want on StreetEasy or Homes.com
+   2. Copy its URL and the key details
+   3. Add a block below following the same format
+   4. Save + push to GitHub → appears on your site immediately
+   5. When a listing sells, just delete its block
 
-   HOW TO ADD A LISTING:
-   1. Copy one { ... } block below
-   2. Fill in your real price, address, and details
-   3. Save and push to GitHub — it appears instantly
-
-   STATUS OPTIONS: 'Active' | 'In Contract' | 'New'
-   BOROUGH OPTIONS: 'brooklyn' | 'queens' | 'manhattan' | 'bronx' | 'staten-island'
+   STATUS: 'Active' | 'In Contract' | 'Sold' | 'New'
+   BOROUGH: 'brooklyn' | 'queens' | 'manhattan' | 'bronx' | 'staten-island'
    ================================================================ */
 
 const LISTING_POOL = [
 
-  // ── ADD YOUR REAL LISTINGS HERE ──
-  // Uncomment and fill in the block below for each listing:
-  //
-  // {
-  //   price:   '$850,000',
-  //   address: '123 Ocean Ave',
-  //   hood:    'Bay Ridge, Brooklyn 11209',
-  //   status:  'Active',
-  //   type:    '2-Family',
-  //   beds:    '4',
-  //   baths:   '2',
-  //   sqft:    '1,800',
-  //   borough: 'brooklyn',
-  //   desc:    'Write a description of the property here.',
-  //   features:['Feature One','Feature Two','Feature Three','Feature Four'],
-  //   link:    'https://www.homes.com/property/YOUR-LISTING-ID/'
-  // },
+  /* ── PASTE YOUR LISTINGS BELOW THIS LINE ──────────────────────
+     Copy this template for each listing and fill in real details:
+
+  {
+    price:    '$000,000',
+    address:  '123 Street Name',
+    hood:     'Neighborhood, Borough ZIPCODE',
+    status:   'Active',
+    type:     '2-Family',
+    beds:     '3',
+    baths:    '2',
+    sqft:     '1,500',
+    borough:  'brooklyn',
+    img:      '',
+    desc:     'Write your property description here. Include key selling points, transit access, condition, and investment potential.',
+    features: ['Feature 1', 'Feature 2', 'Feature 3', 'Feature 4', 'Feature 5', 'Feature 6'],
+    link:     'https://streeteasy.com/YOUR-LISTING-URL'
+  },
+
+  ── PASTE YOUR LISTINGS ABOVE THIS LINE ────────────────────── */
 
 ];
 
@@ -719,10 +707,13 @@ function loadFeatured(manual = false) {
     card.onclick = () => openModal(i);
     card.innerHTML = `
       <div class="listing-img-wrap">
-        <div class="listing-img-placeholder">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="0.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Add Photo</span>
-        </div>
+        ${l.img
+          ? `<img src="${l.img}" alt="${l.address}" style="width:100%;height:100%;object-fit:cover;">`
+          : `<div class="listing-img-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="0.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Photo Coming Soon</span>
+            </div>`
+        }
         <span class="listing-badge ${sc}">${l.status}</span>
       </div>
       <div class="listing-body">
@@ -809,18 +800,6 @@ function closeModalDirect() {
 }
 document.addEventListener('keydown', e => { if (e.key==='Escape') closeModalDirect(); });
 
-/* Search → open Homes.com in new tab */
-function doSearch() {
-  const loc = document.getElementById('searchLocation').value.trim();
-  const base = 'https://www.homes.com/houses-for-sale/';
-  const url = loc ? base + '?q=' + encodeURIComponent(loc) : base;
-  window.open(url, '_blank', 'noopener');
-  document.getElementById('homesFrameWrap').scrollIntoView({behavior:'smooth', block:'start'});
-}
-function quickSearch(loc) {
-  document.getElementById('searchLocation').value = loc;
-  doSearch();
-}
 
 /* Nav */
 function toggleMenu() { document.getElementById('navMobile').classList.toggle('open'); }
@@ -829,16 +808,19 @@ function closeMenu()  { document.getElementById('navMobile').classList.remove('o
 /* Boot */
 loadFeatured();
 
-/* Homes.com portal search */
-function openHomes() {
-  const q = document.getElementById('homesSearchInput').value.trim();
-  const base = 'https://www.homes.com/houses-for-sale/';
-  const url = q ? base + '?q=' + encodeURIComponent(q) : base;
+/* Homes.com — direct borough-specific search URLs, no geolocation */
+const BOROUGH_URLS = {
+  'brooklyn':     'https://www.homes.com/brooklyn-ny/homes-for-sale/',
+  'queens':       'https://www.homes.com/queens-ny/homes-for-sale/',
+  'manhattan':    'https://www.homes.com/manhattan-ny/homes-for-sale/',
+  'bronx':        'https://www.homes.com/bronx-ny/homes-for-sale/',
+  'staten-island':'https://www.homes.com/staten-island-ny/homes-for-sale/',
+};
+
+/* Called by each borough button — opens exact Homes.com borough page */
+function openBorough(borough) {
+  const url = BOROUGH_URLS[borough] || 'https://www.homes.com/houses-for-sale/';
   window.open(url, '_blank', 'noopener');
-}
-function openHomesLoc(loc) {
-  document.getElementById('homesSearchInput').value = loc;
-  openHomes();
 }
 
 </script>
